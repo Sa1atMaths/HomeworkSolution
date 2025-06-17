@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <title>Hiral's Homework Solution</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fdfdfd;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 28px;
+      color: #2c3e50;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 15px;
+      display: block;
+    }
+
+    select,
+    textarea,
+    button {
+      margin-top: 10px;
+      display: block;
+      width: 100%;
+      font-size: 16px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: none;
+      overflow: hidden;
+      min-height: 80px;
+    }
+
+    .summary {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f0f0f0;
+      border-radius: 8px;
+    }
+
+    .summary h2 {
+      margin-top: 0;
+      color: #1a73e8;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    button {
+      margin-top: 15px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0c57c6;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Hiral's Homework Solution</h1>
+
+  <label>ધોરણ પસંદ કરો:</label>
+  <select id="standardSelect" onchange="selectStandard()">
+    <option value="">-- ધોરણ પસંદ કરો --</option>
+  </select>
+
+  <label class="hidden" id="subjectLabel">વિષય પસંદ કરો:</label>
+  <select id="subjectSelect" class="hidden" onchange="selectSubject()">
+    <option value="">-- વિષય પસંદ કરો --</option>
+  </select>
+
+  <label class="hidden" id="lessonLabel">પાઠ લખો:</label>
+  <textarea id="lessonInput" class="hidden" placeholder="અહીં પાઠ લખો..." oninput="autoSaveLesson(); autoResize(this)"></textarea>
+
+  <div class="summary">
+    <h2>પાઠ યોજના સારાંશ</h2>
+    <div id="summaryContent"></div>
+    <button onclick="copySummary()">📋 ક્લિપબોર્ડ પર નકલ કરો</button>
+    <button onclick="pasteSummary()">📥 ક્લિપબોર્ડમાંથી ચોંટાડો અને ફરી સંપાદિત કરો</button>
+  </div>
+
+  <footer>
+    Author: <strong>Hiral Patel</strong>
+  </footer>
+
+  <script>
+    const standards = {
+      'ધોરણ 5 અ': ['ગુજરાતી', 'હિન્દી', 'અંગ્રેજી', 'પર્યાવરણ', 'ગણિત', 'સામાન્ય જ્ઞાન', 'હસ્તકલા'],
+      'ધોરણ 5 બ': ['ગુજરાતી', 'હિન્દી', 'અંગ્રેજી', 'પર્યાવરણ', 'ગણિત', 'સામાન્ય જ્ઞાન', 'હસ્તકલા']
+    };
+
+    const lessons = {};
+
+    const stdSelect = document.getElementById('standardSelect');
+    const subSelect = document.getElementById('subjectSelect');
+    const lessonInput = document.getElementById('lessonInput');
+    const lessonLabel = document.getElementById('lessonLabel');
+    const subLabel = document.getElementById('subjectLabel');
+
+    // Fill standard dropdown
+    Object.keys(standards).forEach(std => {
+      const option = document.createElement('option');
+      option.value = std;
+      option.textContent = std;
+      stdSelect.appendChild(option);
+    });
+
+    function selectStandard() {
+      const std = stdSelect.value;
+      subSelect.innerHTML = '<option value="">-- વિષય પસંદ કરો --</option>';
+      hideElement(lessonInput);
+      hideElement(lessonLabel);
+      if (!std) {
+        hideElement(subSelect);
+        hideElement(subLabel);
+        return;
+      }
+
+      standards[std].forEach(sub => {
+        const option = document.createElement('option');
+        option.value = sub;
+        option.textContent = sub;
+        subSelect.appendChild(option);
+      });
+
+      showElement(subSelect);
+      showElement(subLabel);
+    }
+
+    function selectSubject() {
+      const std = stdSelect.value;
+      const sub = subSelect.value;
+
+      if (!sub) {
+        hideElement(lessonInput);
+        hideElement(lessonLabel);
+        return;
+      }
+
+      lessonInput.value = lessons?.[std]?.[sub] || '';
+      showElement(lessonInput);
+      showElement(lessonLabel);
+      autoResize(lessonInput);
+    }
+
+    function autoSaveLesson() {
+      const std = stdSelect.value;
+      const sub = subSelect.value;
+      const value = lessonInput.value.trim();
+
+      if (!lessons[std]) lessons[std] = {};
+      lessons[std][sub] = value;
+
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const summaryDiv = document.getElementById('summaryContent');
+      summaryDiv.innerHTML = '';
+
+      Object.entries(lessons).forEach(([std, subjects]) => {
+        const validSubs = Object.entries(subjects).filter(([_, val]) => val.trim());
+        if (validSubs.length > 0) {
+          const stdTitle = document.createElement('h3');
+          stdTitle.textContent = std;
+          summaryDiv.appendChild(stdTitle);
+
+          validSubs.forEach(([sub, lesson]) => {
+            const p = document.createElement('p');
+            p.textContent = `${sub}: ${lesson}`;
+            summaryDiv.appendChild(p);
+          });
+        }
+      });
+    }
+
+    function copySummary() {
+      const text = document.getElementById('summaryContent').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('સારાંશ ક્લિપબોર્ડ પર નકલ થયો છે!');
+      });
+    }
+
+    function pasteSummary() {
+      navigator.clipboard.readText().then(text => {
+        const lines = text.split('\n');
+        let currentStd = null;
+
+        lines.forEach(line => {
+          if (!line.trim()) return;
+          if (!line.includes(':')) {
+            currentStd = line.trim();
+            if (!lessons[currentStd]) lessons[currentStd] = {};
+          } else {
+            const [subject, ...rest] = line.split(':');
+            const lesson = rest.join(':').trim();
+            if (currentStd && subject && lesson !== undefined) {
+              lessons[currentStd][subject.trim()] = lesson;
+            }
+          }
+        });
+
+        updateSummary();
+        alert("ચોંટાડેલી માહિતી સફળતાપૂર્વક ઉમેરાઈ છે. હવે તમે તેને એડિટ કરી શકો છો.");
+      }).catch(err => {
+        alert("Clipboard વાંચવામાં સમસ્યા: " + err);
+      });
+    }
+
+    function autoResize(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    function showElement(el) {
+      el.classList.remove('hidden');
+    }
+
+    function hideElement(el) {
+      el.classList.add('hidden');
+    }
+  </script>
+
+</body>
+</html>
