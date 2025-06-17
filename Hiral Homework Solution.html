@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <title>Hiral Homework Solution</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    select, input, button, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    textarea {
+      height: 220px;
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+  <center> <h1>Hiral Homework Solution</h1></center>
+<center>  <h2>પાઠ ઉમેરો</h2></center>
+
+  <label for="subject">વિષય પસંદ કરો:</label>
+  <select id="subject">
+    <option value="અંગ્રેજી">અંગ્રેજી</option>
+    <option value="ગુજરાતી">ગુજરાતી</option>
+    <option value="ગણિત">ગણિત</option>
+    <option value="પર્યાવરણ">પર્યાવરણ</option>
+    <option value="હિન્દી">હિન્દી</option>
+    <option value="સામાન્ય જ્ઞાન">સામાન્ય જ્ઞાન</option>
+    <option value="હસ્તકલા">હસ્તકલા</option>
+  </select>
+
+  <label for="lesson">પાઠ લખો:</label>
+  <input type="text" id="lesson" placeholder="અહીં પાઠ લખો">
+
+  <button onclick="addLesson()">➕ ઉમેરો</button>
+
+  <label for="summary">તમામ પાઠો:</label>
+  <textarea id="summary" readonly>*ધોરણ 5*</textarea>
+
+  <button onclick="copySummary()">📋 નકલ કરો</button>
+
+  <script>
+    function addLesson() {
+      const subject = document.getElementById("subject").value;
+      const lesson = document.getElementById("lesson").value.trim();
+
+      if (lesson === "") {
+        alert("કૃપા કરીને પાઠ લખો.");
+        return;
+      }
+
+      const line = `*${subject}:* ${lesson}.`;
+      const summary = document.getElementById("summary");
+
+      summary.value += "\n" + line;
+
+      document.getElementById("lesson").value = "";
+      document.getElementById("lesson").focus();
+    }
+
+    function copySummary() {
+      const summary = document.getElementById("summary");
+      summary.select();
+      summary.setSelectionRange(0, 99999); // For mobile support
+      document.execCommand("copy");
+      alert("પાઠ નકલ થઇ ગયો!");
+    }
+  </script>
+
+</body>
+</html>
