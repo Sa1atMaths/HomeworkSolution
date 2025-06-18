@@ -107,6 +107,7 @@
     <div id="summaryContent"></div>
     <button onclick="copySummary()">📋 ક્લિપબોર્ડ પર નકલ કરો</button>
     <button onclick="pasteSummary()">📥 ક્લિપબોર્ડમાંથી ચોંટાડો અને ફરી સંપાદિત કરો</button>
+    <button onclick="shareOnWhatsApp()">📤 WhatsApp પર શેર કરો</button>
   </div>
 
   <footer>
@@ -248,6 +249,25 @@
 
     function hideElement(el) {
       el.classList.add('hidden');
+    }
+
+
+
+
+
+
+
+
+    function shareOnWhatsApp() {
+  const text = document.getElementById('summaryContent').innerText;
+  if (!text.trim()) {
+    alert("શેર કરવા માટે કોઈ સામગ્રી ઉપલબ્ધ નથી.");
+    return;
+  }
+
+  const encodedText = encodeURIComponent(text);
+  const whatsappURL = `https://wa.me/?text=${encodedText}`;
+  window.open(whatsappURL, '_blank');
     }
   </script>
 
